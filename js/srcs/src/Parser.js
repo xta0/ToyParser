@@ -6,11 +6,17 @@ class Parser {
         this._string = '';
         this._tokenizer = new Tokenizer();
     }
-    /**Parses a string into AST */
+    /**
+     * Parses a string into AST 
+     */
     parse(string) {
         this._string = string;
         this._tokenizer.init(string);
 
+        // Prime the tokenizer to obtain the first token, 
+        // which will be used as the lookahead token for parsing.
+        // The lookahead is used for predictive parsing, 
+        // allowing the parser to decide which production rule to apply based on the next token.
         this._lookahead = this._tokenizer.getNextToken();
         // Parse recursively starting from the main entry point, the program:
         return this.Program();
@@ -115,9 +121,10 @@ class Parser {
     }
 
     /**
-     * Literals:
+     * Literals
      *      : NumericLiterals
      *      | String Literals
+     *      ;
      */
     Literal() {
         switch (this._lookahead.type) {
@@ -129,12 +136,12 @@ class Parser {
         throw new SyntaxError('Literal: unexpected literal production');
     }
     /**
-     * 
-     * NumericaLiteral
+     * NumericLiteral
      *  : NUMBER
      *  ;
      */
-    NumericaLiteral() {
+    // -> AST node
+    NumericLiteral() {
         const token = this._eat('NUMBER');
         return {
             type: 'NumericLiteral',
@@ -143,11 +150,11 @@ class Parser {
     }
 
     /**
-        * 
-        * NumericaLiteral
-        *  : STRING
-        *  ;
-        */
+     * StringLiteral
+     *  : STRING
+     *  ;
+     */
+    // -> AST node
     StringLiteral() {
         const token = this._eat('STRING');
         return {
@@ -156,6 +163,9 @@ class Parser {
         };
     }
 
+    /**
+     * Expects a token of a given type and advances to the next token if the expectation is met.
+     */
     _eat(tokenType) {
         const token = this._lookahead;
         if (token == null) {

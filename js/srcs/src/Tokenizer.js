@@ -51,6 +51,7 @@ class Tokenizer {
         }
         throw new SyntaxError(`Unexpected token: "${string[0]}"`)
     }
+    
     _match(regexp, string) {
         let matched = regexp.exec(string);
         if (!matched) {
